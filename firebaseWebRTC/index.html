@@ -123,7 +123,7 @@ $(function() {
 
 	var RTCPeerConnection = window.webkitRTCPeerConnection;
 
-	var database = firebase.database().ref("users/camChat/");
+	var database = null;
 	var yourVideo = document.getElementById("yourVideo");
 	var friendsVideo = document.getElementById("friendsVideo");
 	var yourId = Math.floor(Math.random()*1000000000);
@@ -238,6 +238,8 @@ console.log("readMessage");
 
 	$("#btnConn").on("click", function() {
 
+		$(this).css("display", "none");
+		database = firebase.database().ref("users/camChat/" + $("#inpChannel").val());
 		database.on('child_added', readMessage);
 		showFriendsFace();
 	});
@@ -252,12 +254,14 @@ console.log("readMessage");
 </script>
 </head>
 <body >
-  <div id="chatIdDiv">
+  <div id="chatIdDiv" class="none">
     <input type="text" id="inpId" value="" />
     <input type="button" id="btnId" value="ID 생성" />
+  </div>
+  <div>
+    <input type="text" id="inpChannel" value="chnnal01" />
     <input type="button" id="btnConn" value="연결" />
   </div>
-
   <div id="chatDiv" class="none">
     <textarea id="txtArea" style="width:100%;height:200px;font-size:12px;" readonly="readonly" ></textarea>
     <input type="text" id="inpTxt" value="" />
