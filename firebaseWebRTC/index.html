@@ -123,7 +123,7 @@ $(function() {
 
 	var RTCPeerConnection = window.webkitRTCPeerConnection;
 
-	var database = null;
+	var database = firebase.database().ref("users/camChat/" + $("#inpChannel").val());
 	var yourVideo = document.getElementById("yourVideo");
 	var friendsVideo = document.getElementById("friendsVideo");
 	var yourId = Math.floor(Math.random()*1000000000);
@@ -218,6 +218,8 @@ console.log("readMessage");
 		}
 	};
 
+	database.on('child_added', readMessage);
+
 	function showMyFace() {
 	 navigator.mediaDevices.getUserMedia({audio:true, video:true})
 	 .then(function(stream) {
@@ -239,8 +241,8 @@ console.log("readMessage");
 	$("#btnConn").on("click", function() {
 
 		$(this).css("display", "none");
-		database = firebase.database().ref("users/camChat/" + $("#inpChannel").val());
-		database.on('child_added', readMessage);
+		// database = firebase.database().ref("users/camChat/" + $("#inpChannel").val());
+		// database.on('child_added', readMessage);
 		showFriendsFace();
 	});
 
