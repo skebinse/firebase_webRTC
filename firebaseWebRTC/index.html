@@ -1,0 +1,271 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+<style>
+  .none {
+    display: none;
+  }
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- <script src="https://www.gstatic.com/firebasejs/4.1.2/firebase.js"></script> -->
+<script src="https://www.gstatic.com/firebasejs/3.6.4/firebase.js"></script>
+<script>
+$(function() {
+
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDgM8cuaYiXgya81Ifa1VGv7mBFeD8TqVY",
+    authDomain: "socket-server-6ea22.firebaseapp.com",
+    databaseURL: "https://socket-server-6ea22.firebaseio.com",
+    projectId: "socket-server-6ea22",
+    storageBucket: "socket-server-6ea22.appspot.com",
+    messagingSenderId: "93472708311"
+  };
+
+  firebase.initializeApp(config);
+
+  /*
+  * ID 입력
+  */
+  $("#btnId").on("click", function() {
+
+    // ID null 체크
+    if($("#inpId").val().trim() === "") {
+
+      alert("ID 입력!!!");
+      return;
+    }
+
+    // 채팅 영역 제어
+    $("#chatIdDiv").addClass("none");
+    $("#chatDiv").removeClass("none");
+
+    // 채팅 수신 대기
+    firebase.database().ref('users/chat').on("value", reviceChat);
+
+    // 채팅 발신(입장)
+    writeChat("", {isFirst: "true"});
+  });
+
+  function reviceChat(data) {
+    console.log(data.val());
+
+      // 사용자별 채팅 데이터
+      if(data.val().isFirst === "true") {
+
+        c(data.val().id + "님이 입장하셨습니다.");
+      } else {
+
+        c(data.val().id + " : " + data.val().txt);
+      }
+  }
+
+  /*
+  * ID 입력
+  */
+  $('#inpId').on('keypress', function(e) {
+
+    if (e.which == 13) {
+
+      $("#btnId").trigger("click");
+    }
+  });
+
+  /*
+  * 채팅 내용 입력
+  */
+  $("#btnSend").on("click", function() {
+
+    if($("#inpTxt").val().trim() !== "") {
+
+      writeChat($("#inpTxt").val());
+      $("#inpTxt").val("");
+    }
+	});
+
+  /*
+  * 채팅 내용 입력
+  */
+  $('#inpTxt').on('keypress', function(e) {
+
+    if (e.which == 13) {
+
+      $("#btnSend").trigger("click");
+    }
+  });
+
+  /*
+  * 채팅 발신
+  */
+  function writeChat(value, obj) {
+
+    if(!obj) {
+
+      obj = {};
+    }
+
+    obj.txt = value;
+    obj.id = $("#inpId").val();
+
+    firebase.database().ref('users/chat').set(obj);
+  }
+
+  /**
+  *	채팅 텍스트
+  */
+  function c(txt) {
+
+    $("#txtArea").val($("#txtArea").val() + "\n" + txt);
+    $("#txtArea").scrollTop(999999);
+  }
+
+	var RTCPeerConnection = window.webkitRTCPeerConnection;
+
+	var database = firebase.database().ref("users/camChat/");
+	var yourVideo = document.getElementById("yourVideo");
+	var friendsVideo = document.getElementById("friendsVideo");
+	var yourId = Math.floor(Math.random()*1000000000);
+	var servers = {'iceServers': [{
+    'url': 'stun:stun.l.google.com:19302'
+  }, {
+    'url': 'turn:192.158.29.39:3478?transport=udp',
+    'credential': 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+    'username': '28224511:1379330808'
+  }]};
+  							// 		{url:'stun:stun01.sipphone.com'},
+									// {url:'stun:stun.ekiga.net'},
+									// {url:'stun:stun.fwdnet.net'},
+									// {url:'stun:stun.ideasip.com'},
+									// {url:'stun:stun.iptel.org'},
+									// {url:'stun:stun.rixtelecom.se'},
+									// {url:'stun:stun.schlund.de'},
+									// {url:'stun:stun.l.google.com:19302'},
+									// {url:'stun:stun1.l.google.com:19302'},
+									// {url:'stun:stun2.l.google.com:19302'},
+									// {url:'stun:stun3.l.google.com:19302'},
+									// {url:'stun:stun4.l.google.com:19302'},
+									// {url:'stun:stunserver.org'},
+									// {url:'stun:stun.softjoys.com'},
+									// {url:'stun:stun.voiparound.com'},
+									// {url:'stun:stun.voipbuster.com'},
+									// {url:'stun:stun.voipstunt.com'},
+									// {url:'stun:stun.voxgratia.org'},
+									// {url:'stun:stun.xten.com'},
+									// {
+									// 	url: 'turn:numb.viagenie.ca',
+									// 	credential: 'muazkh',
+									// 	username: 'webrtc@live.com'
+									// },
+									// {
+									// 	url: 'turn:192.158.29.39:3478?transport=udp',
+									// 	credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+									// 	username: '28224511:1379330808'
+									// },
+									// {
+									// 	url: 'turn:192.158.29.39:3478?transport=tcp',
+									// 	credential: 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+									// 	username: '28224511:1379330808'
+									// }]};
+	var pc = new RTCPeerConnection(servers);
+
+	pc.onicecandidate = function(event) {
+
+		console.log("onicecandidate");
+		event.candidate ? sendMessage(yourId, JSON.stringify({'ice': event.candidate})) : console.log("Sent All Ice") ;
+	};
+	//(event => event.candidate?sendMessage(yourId, JSON.stringify({'ice': event.candidate})):console.log("Sent All Ice") );
+	pc.onaddstream = function(event) {
+
+		console.log("onaddstream");
+		friendsVideo.srcObject = event.stream;
+	}
+	//(event => friendsVideo.srcObject = event.stream);
+
+	function sendMessage(senderId, data) {
+		console.log("sendMessage : " + senderId);
+	 var msg = database.push({ sender: senderId, message: data });
+	 msg.remove();
+	}
+
+	function readMessage(data) {
+
+		var msg = JSON.parse(data.val().message);
+		var sender = data.val().sender;
+
+		if (sender != yourId) {
+
+console.log("readMessage");
+//console.log(data.val());
+			if (msg.ice != undefined) {
+
+				pc.addIceCandidate(new RTCIceCandidate(msg.ice));
+			} else if (msg.sdp.type == "offer") {
+
+				pc.setRemoteDescription(new RTCSessionDescription(msg.sdp))
+				.then(() => pc.createAnswer())
+				.then(answer => pc.setLocalDescription(answer))
+				.then(() => sendMessage(yourId, JSON.stringify({'sdp': pc.localDescription})));
+				// .then(function() {console.log("1");pc.createAnswer();})
+				// .then(function(answer) {console.log("2");pc.setLocalDescription(answer);})
+				// .then(function() {console.log("3");sendMessage(yourId, JSON.stringify({'sdp': pc.localDescription}));})
+			}
+			else if (msg.sdp.type == "answer") {
+
+				pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+			}
+		}
+	};
+
+	database.on('child_added', readMessage);
+
+	function showMyFace() {
+	 navigator.mediaDevices.getUserMedia({audio:true, video:true})
+	 .then(function(stream) {
+	 	yourVideo.srcObject = stream;
+	 	pc.addStream(stream);
+	 })
+	 // .then(stream => yourVideo.srcObject = stream)
+	 // .then(stream => pc.addStream(stream));
+	}
+
+	function showFriendsFace() {
+	 pc.createOffer()
+	 .then(offer => pc.setLocalDescription(offer) )
+	 .then(() => sendMessage(yourId, JSON.stringify({'sdp': pc.localDescription})) );
+	}
+
+	showMyFace();
+
+	$("#btnConn").on("click", function() {
+
+		showFriendsFace();
+	});
+
+  // navigator.mediaDevices.getUserMedia({
+  //   audio: false,
+  //   video: true
+  // })
+
+});
+
+</script>
+</head>
+<body >
+  <div id="chatIdDiv">
+    <input type="text" id="inpId" value="" />
+    <input type="button" id="btnId" value="ID 생성" />
+    <input type="button" id="btnConn" value="연결" />
+  </div>
+  <div id="chatDiv" class="none">
+    <textarea id="txtArea" style="width:100%;height:200px;font-size:12px;" readonly="readonly" ></textarea>
+    <input type="text" id="inpTxt" value="" />
+    <input type="button" id="btnSend" value="보내기" />
+  </div>
+  <div>
+	<video id="yourVideo" style="width:20px;height:20px;" autoplay muted></video>
+ 	<video id="friendsVideo" style="width:20px;height:20px;" autoplay></video>
+  </div>
+</body>
+</html>
