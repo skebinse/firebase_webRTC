@@ -68,7 +68,7 @@ $(function() {
   $('#inpId').on('keypress', function(e) {
 
     if (e.which == 13) {
-      
+
       $("#btnId").trigger("click");
     }
   });
@@ -81,7 +81,7 @@ $(function() {
     if($("#inpTxt").val().trim() !== "") {
 
       writeChat($("#inpTxt").val());
-      $("#inpTxt").val(""); 
+      $("#inpTxt").val("");
     }
 	});
 
@@ -91,7 +91,7 @@ $(function() {
   $('#inpTxt').on('keypress', function(e) {
 
     if (e.which == 13) {
-      
+
       $("#btnSend").trigger("click");
     }
   });
@@ -173,7 +173,7 @@ $(function() {
 	pc.onicecandidate = function(event) {
 
 		console.log("onicecandidate");
-		event.candidate ? sendMessage(yourId, JSON.stringify({'ice': event.candidate})) : console.log("Sent All Ice") ; 
+		event.candidate ? sendMessage(yourId, JSON.stringify({'ice': event.candidate})) : console.log("Sent All Ice") ;
 	};
 	//(event => event.candidate?sendMessage(yourId, JSON.stringify({'ice': event.candidate})):console.log("Sent All Ice") );
 	pc.onaddstream = function(event) {
@@ -185,7 +185,7 @@ $(function() {
 
 	function sendMessage(senderId, data) {
 		console.log("sendMessage : " + senderId);
-	 var msg = database.push({ sender: senderId, message: data });	
+	 var msg = database.push({ sender: senderId, message: data });
 	 msg.remove();
 	}
 
@@ -206,14 +206,14 @@ console.log("readMessage");
 				pc.setRemoteDescription(new RTCSessionDescription(msg.sdp))
 				.then(() => pc.createAnswer())
 				.then(answer => pc.setLocalDescription(answer))
-				.then(() => sendMessage(yourId, JSON.stringify({'sdp': pc.localDescription})));	
+				.then(() => sendMessage(yourId, JSON.stringify({'sdp': pc.localDescription})));
 				// .then(function() {console.log("1");pc.createAnswer();})
 				// .then(function(answer) {console.log("2");pc.setLocalDescription(answer);})
 				// .then(function() {console.log("3");sendMessage(yourId, JSON.stringify({'sdp': pc.localDescription}));})
 			}
 			else if (msg.sdp.type == "answer") {
 
-				pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));		
+				pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
 			}
 		}
 	};
@@ -257,6 +257,7 @@ console.log("readMessage");
     <input type="button" id="btnId" value="ID 생성" />
     <input type="button" id="btnConn" value="연결" />
   </div>
+
   <div id="chatDiv" class="none">
     <textarea id="txtArea" style="width:100%;height:200px;font-size:12px;" readonly="readonly" ></textarea>
     <input type="text" id="inpTxt" value="" />
